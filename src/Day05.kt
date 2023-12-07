@@ -32,7 +32,7 @@ fun main() {
         val seeds = input[0].substringAfter("seeds: ").split(" ").map { it.toLong() }.toLongArray()
         val segments = ArrayList<Pair<Long, Long>>()
         for (i in 0..seeds.lastIndex step 2) {
-            segments.add(seeds[i] to seeds[i] + seeds[i + 1])
+            segments.add(seeds[i] to (seeds[i] + seeds[i + 1]))
         }
         var mapSegments = ArrayList<Triple<Long, Long, Long>>()
         for (line in input.subList(3, input.size)) {
@@ -53,10 +53,10 @@ fun main() {
                         }
                         newSegments.add(commonL + diff to commonR + diff)
                         segments.removeAt(i)
-                        if (commonL - 1 >= left) {
+                        if (left < commonL) {
                             segments.add(left to commonL - 1)
                         }
-                        if (right >= commonR + 1) {
+                        if (right > commonR) {
                             segments.add(commonR + 1 to right)
                         }
                     }
@@ -65,8 +65,8 @@ fun main() {
                 mapSegments = ArrayList()
                 continue
             }
-            val (dest, from, sz) = line.split(" ").map { it.toLong() }
-            mapSegments.add(Triple(from, from + sz, dest - from))
+            val (dest, source, sz) = line.split(" ").map { it.toLong() }
+            mapSegments.add(Triple(source, source + sz - 1, dest - source))
         }
 
         val newSegments = ArrayList<Pair<Long, Long>>()
@@ -82,21 +82,21 @@ fun main() {
                 }
                 newSegments.add(commonL + diff to commonR + diff)
                 segments.removeAt(i)
-                if (commonL - 1 >= left) {
+                if (left < commonL) {
                     segments.add(left to commonL - 1)
                 }
-                if (right >= commonR + 1) {
+                if (right > commonR) {
                     segments.add(commonR + 1 to right)
                 }
             }
         }
         segments.addAll(newSegments)
-        return min(segments.minBy { it.second }.second, segments.minBy { it.first }.first)
+        return segments.minBy { it.first }.first
     }
 
     val testInput = readInput("Day05_test")
     check(part1(testInput) == 35L)
-    //check(part2(testInput) == 46L)
+    check(part2(testInput) == 46L)
 
     val input = readInput("Day05")
     part1(input).println()
@@ -104,6 +104,7 @@ fun main() {
 }
 // 3763466 -- too low
 // 12634633 -- NO
+// 12634632
 // 216039041 -- too big
 // 4206359309 -- ??????
 // 21603904 -- too high
